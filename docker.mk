@@ -15,9 +15,11 @@ endif
 DKR_DOCKER     ?= $(shell which docker)
 DKR_DOCKERFILE ?= .
 DKR_IMAGE_VSN  ?= $(shell git describe --tags 2> /dev/null || echo dev)
-DKR_BUILD_OPTS ?= -t $(DKR_IMAGE):$(DKR_IMAGE_VSN)
-DKR_RUN_OPTS   ?= --rm -it
+DKR_BUILD_OPTS ?= -t $(DKR_IMAGE_FULL)
+DKR_RUN_OPTS   ?= --name $(DKR_IMAGE) -d--rm -it
 DKR_RUN_CMD    ?= /bin/sh
+DKR_REGISTRY   ?=
+DKR_TAG_OPTS   ?=
 
 ## Macros
 ##-------------------------------------------------------------------------
@@ -28,6 +30,17 @@ DKR_IMAGE_FULL := $(DKR_IMAGE):$(DKR_IMAGE_VSN)
 dkr-build: ; $(DKR_DOCKER) build $(DKR_BUILD_OPTS) $(DKR_DOCKERFILE)
 
 dkr-run: ; $(DKR_DOCKER) run $(DKR_RUN_OPTS) $(DKR_IMAGE_FULL) $(DKR_RUN_CMD)
+
+ifneq ($(strip $(DKR_REGISTRY)),)
+dkr-push:
+	$(DKR_DOCKER) tag $(DKR_TAG_OPTS) $(DKR_IMAGE_FULL) $(DKR_REGISTRY)/$(DKR_IMAGE_FULL)
+	$(DKR_DOCKER) push $(DKR_REGISTRY)/$(DKR_IMAGE_FULL)
+	$(DKR_DOCKER) tag -f $(DKR_REGISTRY)/$(DKR_IMAGE_FULL) $(DKR_REGISTRY)/$(DKR_IMAGE):latest
+	$(DKR_DOCKER) push $(DKR_REGISTRY)/$(DKR_IMAGE):latest
+else
+dkr-push:
+	$(error DKR_REGISTRY is not set)
+endif
 
 dkr-info:
 	@echo "[info] docker.mk: DKR_DOCKER     = $(DKR_DOCKER)"
