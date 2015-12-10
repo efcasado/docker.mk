@@ -12,6 +12,7 @@ ifndef DKR_IMAGE
 $(error DKR_IMAGE is not set)
 endif
 
+DKR_HOOKS      ?= false
 DKR_DOCKER     ?= $(shell which docker)
 DKR_DOCKERFILE ?= .
 DKR_IMAGE_VSN  ?= $(shell git describe --tags 2> /dev/null || echo dev)
@@ -27,6 +28,12 @@ DKR_IMAGE_FULL := $(DKR_IMAGE):$(DKR_IMAGE_VSN)
 
 ## Targets
 ##-------------------------------------------------------------------------
+ifeq ($(strip $(DKR_HOOKS)),true)
+build:: | dkr-build
+run:: | dkr-run
+push:: | dkr-push
+endif
+
 dkr-build: ; $(DKR_DOCKER) build $(DKR_BUILD_OPTS) $(DKR_DOCKERFILE)
 
 dkr-run: ; $(DKR_DOCKER) run $(DKR_RUN_OPTS) $(DKR_IMAGE_FULL) $(DKR_RUN_CMD)
