@@ -6,6 +6,42 @@ implements some handy targets that you might find useful when developing
 [Docker](https://www.docker.com/) images.
 
 
+### Usage
+
+If you are interested in using `docker.mk` in your project, all you have
+to do is to add the following code snippet to your `Makefile`, where
+`<dkrmk-version>` and `<dkrmk-image>` are the version of `docker.mk` you
+want to use in your project and the name of the Docker image your project
+is about.
+
+```Makefile
+.PHONY: ALWAYS
+
+DKRMK_VSN := <dkrmk-version>
+
+## Include docker.mk
+##-------------------------------------------------------------------------
+-include docker.mk
+
+## docker.mk settings
+##-------------------------------------------------------------------------
+export
+
+DKR_IMAGE := <dkrmk-image>
+
+## docker.mk bootstrap
+##-------------------------------------------------------------------------
+DKRMK_VSN_FILE := .dkrmk-vsn-$(DKRMK_VSN)
+DKRMK_URL      := https://github.com/efcasado/docker.mk
+DKRMK_VSN_URL  := $(DKRMK_URL)/releases/download/$(DKRMK_VSN)/docker.mk
+docker.mk: $(DKRMK_VSN_FILE)
+$(DKRMK_VSN_FILE): ; rm -rf docker.mk && rm -rf .dkrmk-vsn-* && wget $(DKRMK_VSN_URL) && touch $(DKRMK_VSN_FILE)
+
+%: ALWAYS; $(MAKE) -f docker.mk $*
+ALWAYS:
+```
+
+
 ### Author(s)
 
 - Enrique Fernandez `<efcasado@gmail.com>`
