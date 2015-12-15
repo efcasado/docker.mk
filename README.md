@@ -9,10 +9,23 @@ implements some handy targets that you might find useful when developing
 ### Usage
 
 If you are interested in using `docker.mk` in your project, all you have
-to do is to add the following code snippet to your `Makefile`, where
-`<dkrmk-version>` and `<dkrmk-image>` are the version of `docker.mk` you
-want to use in your project and the name of the Docker image your project
-is about.
+to do is to copy the `docker.mk` to your project's directory and add the
+following code snippet to your `Makefile`, where `<dkrmk-image>` is the
+Docker image your project is all about.
+
+```Makefile
+## Include docker.mk
+##-------------------------------------------------------------------------
+include docker.mk
+
+## docker.mk settings
+##-------------------------------------------------------------------------
+DKR_IMAGE := <dkrmk-image>
+```
+
+Alternatively, you can also get `docker.mk` to be automatically bootstrapped
+by using the following code snippet instead, where `<dkrmk-version>` is the
+version of `docker.mk` that will be used in your project.
 
 ```Makefile
 .PHONY: ALWAYS
